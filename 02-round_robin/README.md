@@ -12,7 +12,13 @@ chmod +x build.sh
 ```
 
 ## How to run?
+
+```
 mpirun -np 4 ./build/main > ./build/output.txt
+```
 
 ## How to verify?
+
+```
 sort --numeric-sort --stable ./build/output.txt
+```
