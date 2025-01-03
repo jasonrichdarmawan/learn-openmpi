@@ -14,8 +14,10 @@ include_directories(${MPI_INCLUDE_PATH})
 # Add the include directory
 include_directories(include)
 
-# Add the executable
-add_executable(main main.cpp src/round_robin.cpp)
+add_library(helpers STATIC src/helpers.cpp)
 
-# Link the MPI libraries
+add_executable(main main.cpp src/round_robin.cpp)
 target_link_libraries(main ${MPI_LIBRARIES})
+
+add_executable(main_sr main.cpp src/round_robin_sr.cpp)
+target_link_libraries(main_sr ${MPI_LIBRARIES})

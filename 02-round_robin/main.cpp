@@ -1,6 +1,6 @@
 #include <mpi.h>
 #include <cstdio>
-#include "round_robin.h"
+#include "round_robin.hpp"
 
 int main(int argc, char **argv)
 {
