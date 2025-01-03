@@ -1,0 +1,4 @@
+/Users/jason/Documents/01 西北工业大学/10 Courses/09 High Performance Computing/learn-openmpi/03-broad_barrier/build/CMakeFiles/helpers.dir
+/Users/jason/Documents/01 西北工业大学/10 Courses/09 High Performance Computing/learn-openmpi/03-broad_barrier/build/CMakeFiles/main.dir
+/Users/jason/Documents/01 西北工业大学/10 Courses/09 High Performance Computing/learn-openmpi/03-broad_barrier/build/CMakeFiles/edit_cache.dir
+/Users/jason/Documents/01 西北工业大学/10 Courses/09 High Performance Computing/learn-openmpi/03-broad_barrier/build/CMakeFiles/rebuild_cache.dir
