@@ -14,4 +14,5 @@ int main(int argc, char** argv) {
     printf("Hello: rank %d, num_procs: %d\n", rank, num_procs);
     
     MPI_Finalize();
+    return 0;
 }
