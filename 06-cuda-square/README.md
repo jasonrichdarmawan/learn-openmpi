@@ -1,11 +1,11 @@
 # How to build?
 
 ```
-nvcc -o main main.cu
+mkdir -p build && nvcc -o ./build/main main.cu
 ```
 
 # How to run?
 
 ```
-./main
+./build/main
 ```
