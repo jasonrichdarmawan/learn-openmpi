@@ -1,7 +1,6 @@
 #include "MPI_Mat_vect_mult_row.h"
 #include <mpi.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 void MPI_Mat_vect_mult_row(const double *local_mat, 
                            const double *vect, 
@@ -55,4 +54,9 @@ void MPI_Mat_vect_mult_row(const double *local_mat,
     MPI_Allgatherv(local_result, local_rows, MPI_DOUBLE,
                    *result_vect, recvcounts, displs_result, MPI_DOUBLE,
                    MPI_COMM_WORLD);
+
+    // Clean up
+    free(local_result);
+    free(recvcounts);
+    free(displs_result);
 }

@@ -1,6 +1,5 @@
 #include "Mat_vect_mult.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 void Mat_vect_mult(const double *mat,
                    const double *vect,
