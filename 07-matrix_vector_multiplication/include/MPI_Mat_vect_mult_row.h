@@ -5,9 +5,10 @@
 // matrices are distributed among the process in block-row fashion
 // vectors are distributed among the processes as blocks
 // the result vector c should be distributed among the processes as blocks
-void MPI_Mat_vect_mult_row(const double *mat, 
+void MPI_Mat_vect_mult_row(const double *local_mat, 
                            const double *vect, 
                            double **result_vect,
+                           const int local_rows,
                            const int rows,
                            const int cols);
 
