@@ -87,6 +87,8 @@ int main(int argc, char **argv)
     free(vect);
     free(result_vect);
 
+    MPI_Comm_free(&newcomm);
+
     MPI_Finalize();
     return 0;
 }
