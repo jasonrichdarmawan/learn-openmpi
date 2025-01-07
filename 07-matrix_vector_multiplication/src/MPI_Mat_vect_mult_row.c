@@ -1,5 +1,4 @@
 #include "MPI_Mat_vect_mult_row.h"
-#include <mpi.h>
 #include <stdlib.h>
 
 void MPI_Mat_vect_mult_row(const double *local_mat, 
@@ -7,7 +6,8 @@ void MPI_Mat_vect_mult_row(const double *local_mat,
                            double **result_vect,
                            const int local_rows,
                            const int rows,
-                           const int cols)
+                           const int cols,
+                           MPI_Comm comm)
 {
     // Perform the matrix-vector multiplication
     double *local_result = (double *)malloc(local_rows * sizeof(double));
@@ -34,7 +34,7 @@ void MPI_Mat_vect_mult_row(const double *local_mat,
     // recvcounts = {2, 1}
     // displs_result = {0, 2}
     int size;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_size(comm, &size);
     int *recvcounts = (int *)malloc(size * sizeof(int));
     int *displs_result = (int *)malloc(size * sizeof(int));
     int remainder = rows % size;
@@ -53,7 +53,7 @@ void MPI_Mat_vect_mult_row(const double *local_mat,
     *result_vect = (double *)malloc(rows * sizeof(double));
     MPI_Allgatherv(local_result, local_rows, MPI_DOUBLE,
                    *result_vect, recvcounts, displs_result, MPI_DOUBLE,
-                   MPI_COMM_WORLD);
+                   comm);
 
     // Clean up
     free(local_result);

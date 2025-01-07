@@ -27,12 +27,29 @@ int main(int argc, char **argv)
         Mat_vect_read_file("data.txt", &mat, &vect, &rows, &cols);
     }
 
+    // use optimal number of processes
+    MPI_Bcast(&rows, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Comm newcomm = MPI_COMM_NULL;
+    int color = (rank < rows) ? 0 : MPI_UNDEFINED;
+    MPI_Comm_split(MPI_COMM_WORLD, color, rank, &newcomm);
+    if (newcomm == MPI_COMM_NULL)
+    {
+        MPI_Finalize();
+        return 0;
+    }
+
     double *local_mat;
     int local_rows;
-    MPI_Mat_vect_scatter_row(mat, &local_mat, &vect, &local_rows, &rows, &cols);
+    MPI_Mat_vect_scatter_row(mat, 
+                             &local_mat, 
+                             &vect, 
+                             &local_rows, 
+                             &rows, 
+                             &cols, 
+                             newcomm);
 
     // Start timing
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(newcomm);
     double start_time = MPI_Wtime();
 
     double *result_vect;
@@ -41,10 +58,11 @@ int main(int argc, char **argv)
                           &result_vect, 
                           local_rows, 
                           rows,
-                          cols);
+                          cols,
+                          newcomm);
 
     // End timing
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(newcomm);
     double end_time = MPI_Wtime();
     if (rank == 0)
     {
