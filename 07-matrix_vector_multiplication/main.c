@@ -44,7 +44,8 @@ int main(int argc, char **argv)
     double end_time = MPI_Wtime();
     if (rank == 0)
     {
-        printf("Elapsed time: %f seconds\n", end_time - start_time);
+        double elapsed_time = end_time - start_time;
+        printf("Elapsed time: %.0f µs\n", elapsed_time * 1e6);
     }
 
     // Print the result vector
