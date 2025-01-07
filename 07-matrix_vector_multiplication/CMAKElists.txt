@@ -10,5 +10,5 @@ include_directories(${MPI_INCLUDE_PATH})
 
 include_directories(include)
 
-add_executable(main main.c src/Mat_vect_read_file.c src/Mat_vect_mult.c)
+add_executable(main main.c src/Mat_vect_read_file.c src/Mat_vect_mult.c src/MPI_Mat_vect_mult_row.c)
 target_link_libraries(main ${MPI_LIBRARIES})
