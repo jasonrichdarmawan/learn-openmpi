@@ -5,7 +5,8 @@
 // At the end of the program's execution, 
 // the result vector c should be distributed among the processes as blocks.
 
-#include "MPI_Mat_vect_read_file.h"
+#include "Mat_vect_read_file.h"
+#include "MPI_Mat_vect_scatter_row.h"
 #include "MPI_Mat_vect_mult_row.h"
 #include <stdio.h>
 #include <mpi.h>
@@ -18,14 +19,17 @@ int main(int argc, char **argv)
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    double *local_mat, *vect;
-    int local_rows, rows, cols;
-    MPI_Mat_vect_read_file("data.txt", 
-                           &local_mat,
-                           &vect,
-                           &local_rows,
-                           &rows,
-                           &cols);
+    // assume both the matrix and the vector are input from a data file.
+    double *mat, *vect;
+    int rows, cols;
+    if (rank == 0)
+    {
+        Mat_vect_read_file("data.txt", &mat, &vect, &rows, &cols);
+    }
+
+    double *local_mat;
+    int local_rows;
+    MPI_Mat_vect_scatter_row(mat, &local_mat, &vect, &local_rows, &rows, &cols);
 
     // Start timing
     MPI_Barrier(MPI_COMM_WORLD);
@@ -57,6 +61,10 @@ int main(int argc, char **argv)
     printf("\n");
 
     // Clean up
+    if (rank == 0)
+    {
+        free(mat);
+    }
     free(local_mat);
     free(vect);
     free(result_vect);

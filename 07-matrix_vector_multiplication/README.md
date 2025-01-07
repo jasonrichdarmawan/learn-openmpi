@@ -23,3 +23,7 @@ chmod +x build.sh
 ```
 mpirun -np <number of processes> ./build/main
 ```
+
+# Remember
+
+1. If you want to scatter, gather. Suppose you have a `int rows` in the `main` function and wish to do scatter in `void do_scatter()`, make sure to pass the pointer of `rows` instead of just the value of `rows`. For example, `do_scatter(&rows)`
