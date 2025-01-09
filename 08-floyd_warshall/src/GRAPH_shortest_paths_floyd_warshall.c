@@ -18,12 +18,22 @@ int GRAPH_shortest_paths_floyd_warshall(const double * const *graph,
         }
     }
 
+    // k is the intermediate vertex
+    // i is the source vertex
+    // j is the destination vertex
     for (int k = 0; k < vertices; k++)
     {
         for (int i = 0; i < vertices; i++)
         {
             for (int j = 0; j < vertices; j++)
             {
+                // performance optimization
+                // Skip if i and j are the same vertex
+                if (i == j)
+                {
+                    continue;
+                }
+
                 // performance optimization
                 // Skip if there is no edge between i and k or between k and j
                 if ((*distance)[i][k] == DBL_MAX || (*distance)[k][j] == DBL_MAX){
