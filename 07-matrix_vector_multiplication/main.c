@@ -6,6 +6,7 @@
 // the result vector c should be distributed among the processes as blocks.
 
 #include "Mat_vect_read_file.h"
+#include "Mat_vect_create.h"
 #include "MPI_Mat_vect_scatter_row.h"
 #include "MPI_Mat_vect_mult_row.h"
 #include <stdio.h>
@@ -24,8 +25,27 @@ int main(int argc, char **argv)
     int rows, cols;
     if (rank == 0)
     {
-        Mat_vect_read_file("data.txt", &mat, &vect, &rows, &cols);
+        // Mat_vect_read_file("data.txt", &mat, &vect, &rows, &cols);
+        rows = 8;
+        cols = 1e6;
+        srand(0);
+        Mat_vect_create(&mat, &vect, rows, cols);
     }
+
+    // Print the matrix
+    // if (rank == 0)
+    // {
+    //     printf("%d | Matrix:\n", rank);
+    //     for (int i = 0; i < rows; i++)
+    //     {
+    //         printf("%d | ", rank);
+    //         for (int j = 0; j < cols; j++)
+    //         {
+    //             printf("%.1f ", mat[i * cols + j]);
+    //         }
+    //         printf("\n");
+    //     }
+    // }
 
     // use optimal number of processes
     MPI_Bcast(&rows, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -38,6 +58,10 @@ int main(int argc, char **argv)
         return 0;
     }
 
+    // Start timing
+    MPI_Barrier(newcomm);
+    double start_time = MPI_Wtime();
+
     double *local_mat;
     int local_rows;
     MPI_Mat_vect_scatter_row(mat, 
@@ -47,10 +71,6 @@ int main(int argc, char **argv)
                              &rows, 
                              &cols, 
                              newcomm);
-
-    // Start timing
-    MPI_Barrier(newcomm);
-    double start_time = MPI_Wtime();
 
     double *result_vect;
     MPI_Mat_vect_mult_row(local_mat,
@@ -71,12 +91,12 @@ int main(int argc, char **argv)
     }
 
     // Print the result vector
-    printf("%d | Result vector: ", rank);
-    for (int i = 0; i < rows; i++)
-    {
-        printf("%.1f ", result_vect[i]);
-    }
-    printf("\n");
+    // printf("%d | Result vector: ", rank);
+    // for (int i = 0; i < rows; i++)
+    // {
+    //     printf("%.1f ", result_vect[i]);
+    // }
+    // printf("\n");
 
     // Clean up
     if (rank == 0)
