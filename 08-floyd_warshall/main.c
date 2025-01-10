@@ -136,6 +136,8 @@ int main(int argc, char **argv)
     // Free the distance matrix
     free(distance);
 
+    MPI_Comm_free(newcomm);
+
     MPI_Finalize();
 
     return 0;
