@@ -10,5 +10,10 @@ include_directories(${MPI_INCLUDE_PATH})
 
 include_directories(include)
 
-add_executable(main main.c src/GRAPH_max_edges.c src/GRAPH_random_graph.c src/GRAPH_shortest_paths_floyd_warshall.c)
+add_executable(main main.c
+                    src/GRAPH_max_edges.c 
+                    src/GRAPH_random_graph.c 
+                    src/flatten_2D_double.c 
+                    src/GRAPH_shortest_paths_floyd_warshall.c
+                    src/MPI_GRAPH_shortest_paths_floyd_warshall.c)
 target_link_libraries(main ${MPI_LIBRARIES})
