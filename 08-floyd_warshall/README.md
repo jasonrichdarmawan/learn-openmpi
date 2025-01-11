@@ -30,3 +30,73 @@ mpirun -np <number of processes> ./build/main
 # Note
 
 Careful with communication overhead. For example, using `MPI_Bcast` over simple O(N^2) computation. Just do the O(N^2) at each process.
+
+## k_owner and k_relative_row
+
+The code presented is not easy to maintain. So, we presented an alternative algorithm. However, the alternative algorithm may have scalability limitations when the number of processes increases to the thousands.
+
+```
+    int max_rows_per_process = (vertices + size - 1) / size; // equivalent to ceil(vertices / size), but ceil is for double
+    for (int k = 0; k < vertices; k++)
+    {
+        // Broadcast the k-th row of the distance vector
+        double *k_row = (double *)malloc(vertices * sizeof(double));
+        int k_owner;
+        if (remainder == 0) {
+            k_owner = k / max_rows_per_process;
+        } else
+        {
+            k_owner = (k < remainder * max_rows_per_process) ? 
+                      k / max_rows_per_process : 
+                      (k - remainder) / (max_rows_per_process - 1);
+        }
+
+        if (rank == k_owner)
+        {
+            int k_relative_row;
+            if (remainder == 0)
+            {
+                k_relative_row = max_rows_per_process == 1 ?
+                                 0 : 
+                                 k % max_rows_per_process;
+            }
+            else
+            {
+                k_relative_row = (k < remainder * max_rows_per_process) ? 
+                                 k % max_rows_per_process : 
+                                 (k - remainder) % (max_rows_per_process - 1);
+            }
+            memcpy(k_row, &local_distance[k_relative_row * vertices], vertices * sizeof(double));
+        }
+        MPI_Bcast(k_row, vertices, MPI_DOUBLE, k_owner, comm);
+```
+
+Alternatively, to enhance readability and maintainability, the computation of k"_owner"  can be implemented using the algorithm outlined in APPENDIX E. However, this approach may exhibit scalability limitations when the number of processes increases to the thousands. It is important to note that the experimental results presented do not utilize the alternative algorithm.
+
+```
+    // Determine the owner process and the relative row for each vertex
+    int (*rows_owner)[2] = (int (*)[2])malloc(vertices * sizeof(int[2]));
+    for (int i = 0; i < vertices; i++) {
+        int owner_process = 0;
+        // displs[owner_process] / vertices is the first row of the owner process
+        // sendcounts[owner_process] / vertices is the number of rows of the owner process
+        while (i >= displs[owner_process] / vertices + sendcounts[owner_process] / vertices) {
+            owner_process++;
+        }
+        rows_owner[i][0] = owner_process; // process rank
+        rows_owner[i][1] = i - displs[owner_process] / vertices; // relative row within the process
+    }
+```
+
+Usage
+```
+        // Broadcast the k-th row of the distance vector
+        double *k_row = (double *)malloc(vertices * sizeof(double));
+        int k_owner = rows_owner[k][0];
+        if (rank == k_owner)
+        {
+            int k_relative_row = rows_owner[k][1];
+            memcpy(k_row, &local_distance[k_relative_row * vertices], vertices * sizeof(double));
+        }
+        MPI_Bcast(k_row, vertices, MPI_DOUBLE, k_owner, comm);
+```
